@@ -69,7 +69,7 @@ public class MovieDetailsRequest implements Serializable {
     }
 
     public String toCsvFormat() {
-        return "\n" + showId +
+        return showId +
                 "," + type +
                 ",'" + title +
                 "," + director +
@@ -80,7 +80,7 @@ public class MovieDetailsRequest implements Serializable {
                 "," + rating +
                 "," + duration +
                 "," + genres +
-                "," + description;
+                "," + description + "\n";
     }
 
     public String getShowId() {

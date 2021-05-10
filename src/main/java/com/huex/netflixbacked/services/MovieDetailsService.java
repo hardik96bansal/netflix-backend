@@ -126,7 +126,7 @@ public class MovieDetailsService implements MovieDetailsServiceInterface{
     }
 
     public void pushDbQueueToDb(){
-        if(moviesCsvQueue.size()>0) insertMoviesListIntoDB(moviesDbQueue);
+        if(moviesDbQueue.size()>0) insertMoviesListIntoDB(moviesDbQueue);
         moviesDbQueue = new ArrayList<>();
     }
 
@@ -161,9 +161,9 @@ public class MovieDetailsService implements MovieDetailsServiceInterface{
         int personMapHits = 0;
         int genresMapHits = 0;
         LocalDateTime t1 = LocalDateTime.now();
-
-        //for(int i=0;i<movieDetailsList.size();i++){
-        for(int i=0;i<10;i++){
+        System.out.println("reached insertMoviesListIntoDB");
+        for(int i=0;i<movieDetailsList.size();i++){
+        //for(int i=0;i<10;i++){
             List<Person> cast = movieDetailsList.get(i).getCast();
             if(cast==null) continue;
             List<Person> updatedCast = new ArrayList<>();
@@ -195,8 +195,8 @@ public class MovieDetailsService implements MovieDetailsServiceInterface{
         System.out.println("Safe until here 123");
 
 
-        //for(int i=0;i<movieDetailsList.size();i++){
-        for(int i=0;i<10;i++){
+        for(int i=0;i<movieDetailsList.size();i++){
+        //for(int i=0;i<10;i++){
             List<Genres> cast = movieDetailsList.get(i).getListedIn();
             if(cast==null) continue;
             List<Genres> updatedCast = new ArrayList<>();
@@ -226,7 +226,7 @@ public class MovieDetailsService implements MovieDetailsServiceInterface{
         }
 
         System.out.println("Safe until here 456");
-        movieDetailsRepository.saveAll(movieDetailsList.subList(0,10));
+        movieDetailsRepository.saveAll(movieDetailsList);
         LocalDateTime t2 = LocalDateTime.now();
         System.out.println("Execution Time: " + ChronoUnit.SECONDS.between(t1, t2) + " seconds" + personMapHits + " "+ genresMapHits);
     }
@@ -245,6 +245,22 @@ public class MovieDetailsService implements MovieDetailsServiceInterface{
 
     public void setListedInMap(HashMap<String, Genres> listedInMap) {
         this.listedInMap = listedInMap;
+    }
+
+    public List<MovieDetails> getMoviesDbQueue() {
+        return moviesDbQueue;
+    }
+
+    public void setMoviesDbQueue(List<MovieDetails> moviesDbQueue) {
+        this.moviesDbQueue = moviesDbQueue;
+    }
+
+    public List<MovieDetailsRequest> getMoviesCsvQueue() {
+        return moviesCsvQueue;
+    }
+
+    public void setMoviesCsvQueue(List<MovieDetailsRequest> moviesCsvQueue) {
+        this.moviesCsvQueue = moviesCsvQueue;
     }
 }
 

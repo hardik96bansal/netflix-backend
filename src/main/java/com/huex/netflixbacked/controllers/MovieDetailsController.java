@@ -40,7 +40,7 @@ public class MovieDetailsController {
 
     @PostMapping("/title/{dataSource}")
     public void addMovieDetailsData(@PathVariable("dataSource") String dataSource, @RequestBody MovieDetailsRequest movieDetailsRequest){
-
+        movieDetailsService.addMovieDetails(dataSource, movieDetailsRequest);
     }
 
     @GetMapping("/error")
