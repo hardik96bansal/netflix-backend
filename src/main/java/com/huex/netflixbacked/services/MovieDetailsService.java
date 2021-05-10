@@ -10,6 +10,7 @@ import com.huex.netflixbacked.repositories.PersonRepository;
 import com.huex.netflixbacked.utilities.CsvFileProcessor;
 import com.huex.netflixbacked.utilities.CsvFileWriter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -122,6 +123,23 @@ public class MovieDetailsService implements MovieDetailsServiceInterface{
             return true;
         }
         return false;
+    }
+
+    public void pushDbQueueToDb(){
+        if(moviesCsvQueue.size()>0) insertMoviesListIntoDB(moviesDbQueue);
+        moviesDbQueue = new ArrayList<>();
+    }
+
+    public void pushCsvQueueToCsv(){
+        for(MovieDetailsRequest csvRecord : moviesCsvQueue){
+            try {
+                CsvFileWriter.writeMovieDetailsToCsvFile(csvRecord);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        moviesCsvQueue = new ArrayList<>();
     }
 
     public Optional<MovieDetails> findById(String id){
