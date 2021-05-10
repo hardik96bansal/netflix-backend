@@ -6,6 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface MovieDetailsRepository extends CrudRepository<MovieDetails, String> {
@@ -21,4 +22,6 @@ public interface MovieDetailsRepository extends CrudRepository<MovieDetails, Str
 
     @Query(value = "select * from movie_details where type=?1 and date_added>= TO_TIMESTAMP(?2,'DD-MM-YYYY') and date_added<= TO_TIMESTAMP(?3,'DD-MM-YYYY')", nativeQuery = true)
     public List<MovieDetails> findTitleBetweenDates(String type, String startDate, String endDate);
+
+    public Optional<MovieDetails> findById(String showId);
 }

@@ -124,6 +124,10 @@ public class MovieDetailsService implements MovieDetailsServiceInterface{
         return false;
     }
 
+    public Optional<MovieDetails> findById(String id){
+        return movieDetailsRepository.findById(id);
+    }
+
     public void loadFirstTime(){
 
         try {
