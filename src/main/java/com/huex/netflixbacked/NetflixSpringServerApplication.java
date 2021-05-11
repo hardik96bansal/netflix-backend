@@ -1,6 +1,6 @@
 package com.huex.netflixbacked;
 
-import com.huex.netflixbacked.repositories.MovieDetailsRepository;
+import com.huex.netflixbacked.dao.MovieDetailsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

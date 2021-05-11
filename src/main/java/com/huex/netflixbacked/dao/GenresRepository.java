@@ -1,4 +1,4 @@
-package com.huex.netflixbacked.repositories;
+package com.huex.netflixbacked.dao;
 
 import com.huex.netflixbacked.models.Genres;
 import org.springframework.data.repository.CrudRepository;

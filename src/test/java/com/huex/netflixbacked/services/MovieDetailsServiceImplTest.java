@@ -2,7 +2,7 @@ package com.huex.netflixbacked.services;
 
 import com.huex.netflixbacked.dto.request.MovieDetailsRequest;
 import com.huex.netflixbacked.models.MovieDetails;
-import com.huex.netflixbacked.repositories.MovieDetailsRepository;
+import com.huex.netflixbacked.dao.MovieDetailsRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,14 +16,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
-public class MovieDetailsServiceTest {
+public class MovieDetailsServiceImplTest {
 
     @Mock
     private MovieDetailsRepository movieDetailsRepository;
 
     @Autowired
     @InjectMocks
-    private MovieDetailsService movieDetailsService;
+    private MovieDetailsServiceImpl movieDetailsServiceImpl;
 
     MovieDetails title1;
 
@@ -49,6 +49,6 @@ public class MovieDetailsServiceTest {
     @Test
     void getTitlesByCountry() {
         Mockito.when(movieDetailsRepository.findById("s01")).thenReturn(Optional.ofNullable(title1));
-        Assertions.assertEquals(movieDetailsService.findById(title1.getShowId()), title1);
+        Assertions.assertEquals(movieDetailsServiceImpl.findById(title1.getShowId()), title1);
     }
 }

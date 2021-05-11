@@ -2,8 +2,7 @@ package com.huex.netflixbacked.controllers;
 
 import com.huex.netflixbacked.dto.request.MovieDetailsRequest;
 import com.huex.netflixbacked.dto.response.MovieDetailsResponseDto;
-import com.huex.netflixbacked.models.MovieDetails;
-import com.huex.netflixbacked.services.MovieDetailsService;
+import com.huex.netflixbacked.services.MovieDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,33 +13,33 @@ import java.util.stream.Collectors;
 public class MovieDetailsController {
 
     @Autowired
-    MovieDetailsService movieDetailsService;
+    MovieDetailsServiceImpl movieDetailsServiceImpl;
 
     @GetMapping("/{type}/{n}")
     public List<MovieDetailsResponseDto> getFirstNTitles(@PathVariable("type") String type, @PathVariable("n") int count){
-        return movieDetailsService.getFirstNTitles(type, count).stream().map(MovieDetailsResponseDto::new).collect(Collectors.toList());
+        return movieDetailsServiceImpl.getFirstNTitles(type, count).stream().map(MovieDetailsResponseDto::new).collect(Collectors.toList());
     }
 
     @GetMapping("/{type}/type/{movieType}")
     public List<MovieDetailsResponseDto> getTitlesByGenreType(@PathVariable("type") String type, @PathVariable("movieType") String genreType){
-        return movieDetailsService.getTitlesByGenreType(type, genreType).stream().map(MovieDetailsResponseDto::new).collect(Collectors.toList());
+        return movieDetailsServiceImpl.getTitlesByGenreType(type, genreType).stream().map(MovieDetailsResponseDto::new).collect(Collectors.toList());
     }
 
     @GetMapping("/{type}/country/{country}")
     public List<MovieDetailsResponseDto> getTitlesByCountry(@PathVariable("type") String type, @PathVariable("country") String country){
-        return movieDetailsService.getTitlesByCountry(type, country).stream().map(MovieDetailsResponseDto::new).collect(Collectors.toList());
+        return movieDetailsServiceImpl.getTitlesByCountry(type, country).stream().map(MovieDetailsResponseDto::new).collect(Collectors.toList());
     }
 
     @GetMapping("/{type}/startDate/{startDate}/endDate/{endDate}")
     public List<MovieDetailsResponseDto> getTitlesBetweenDates(@PathVariable("type") String type, @PathVariable("startDate") String startDate,
                                                                @PathVariable("endDate") String endDate){
-        return movieDetailsService.getTitlesBetweenDates(type, startDate, endDate).stream().map(MovieDetailsResponseDto::new).collect(Collectors.toList());
+        return movieDetailsServiceImpl.getTitlesBetweenDates(type, startDate, endDate).stream().map(MovieDetailsResponseDto::new).collect(Collectors.toList());
     }
 
 
     @PostMapping("/title/{dataSource}")
     public void addMovieDetailsData(@PathVariable("dataSource") String dataSource, @RequestBody MovieDetailsRequest movieDetailsRequest){
-        movieDetailsService.addMovieDetails(dataSource, movieDetailsRequest);
+        movieDetailsServiceImpl.addMovieDetails(dataSource, movieDetailsRequest);
     }
 
     @GetMapping("/error")
@@ -56,7 +55,7 @@ public class MovieDetailsController {
 
     @GetMapping("/import")
     public String importData() {
-        movieDetailsService.loadFirstTime();
+        movieDetailsServiceImpl.loadFirstTime();
         return "Data has successfully been imported.";
     }
 }

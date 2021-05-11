@@ -1,6 +1,6 @@
 package com.huex.netflixbacked.schedulers;
 
-import com.huex.netflixbacked.services.MovieDetailsService;
+import com.huex.netflixbacked.services.MovieDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -11,17 +11,17 @@ import java.time.LocalDateTime;
 public class DataSourceSync {
 
     @Autowired
-    MovieDetailsService movieDetailsService;
+    MovieDetailsServiceImpl movieDetailsServiceImpl;
 
     @Scheduled(fixedDelay = 30000)
     public void syncDataSources() {
-        System.out.println("DataSourceSync called at: " + LocalDateTime.now() + " DBQueue Size: " + movieDetailsService.getMoviesDbQueue().size()
-            + " CSVQueue Size: " + movieDetailsService.getMoviesCsvQueue().size());
+        System.out.println("DataSourceSync called at: " + LocalDateTime.now() + " DBQueue Size: " + movieDetailsServiceImpl.getMoviesDbQueue().size()
+            + " CSVQueue Size: " + movieDetailsServiceImpl.getMoviesCsvQueue().size());
 
-        movieDetailsService.pushCsvQueueToCsv();
-        movieDetailsService.pushDbQueueToDb();
+        movieDetailsServiceImpl.pushCsvQueueToCsv();
+        movieDetailsServiceImpl.pushDbQueueToDb();
 
-        System.out.println("DataSourceSync after: " + " DBQueue Size: " + movieDetailsService.getMoviesDbQueue().size()
-                + " CSVQueue Size: " + movieDetailsService.getMoviesCsvQueue().size());
+        System.out.println("DataSourceSync after: " + " DBQueue Size: " + movieDetailsServiceImpl.getMoviesDbQueue().size()
+                + " CSVQueue Size: " + movieDetailsServiceImpl.getMoviesCsvQueue().size());
     }
 }
