@@ -1,10 +1,13 @@
 package com.huex.netflixbacked.config;
 
 import com.huex.netflixbacked.exceptions.UnautorizedAccessException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 public class ApiInterceptor extends HandlerInterceptorAdapter {
@@ -26,14 +29,11 @@ public class ApiInterceptor extends HandlerInterceptorAdapter {
         return true;
     }
 
-    @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
-            throws Exception {
-        super.afterCompletion(request, response, handler, ex);
-        long startTime = (Long) request.getAttribute("startTime");
-        long endTime = System.currentTimeMillis();
-        long executeTime = endTime - startTime;
-        response.addHeader(HEADER_TIME, String.valueOf(executeTime));
-        response.addHeader("X-Auth-Token", "token");
+    public static HttpHeaders getResponseHttpHeader(LocalDateTime startTime){
+        LocalDateTime endTime = LocalDateTime.now();
+        HttpHeaders responseHeader = new HttpHeaders();
+        responseHeader.set("X-TIME-TO-EXECUTE",String.valueOf(ChronoUnit.MILLIS.between(startTime, endTime)));
+        return responseHeader;
+
     }
 }
