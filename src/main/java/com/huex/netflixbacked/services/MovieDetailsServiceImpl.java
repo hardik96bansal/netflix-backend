@@ -1,6 +1,8 @@
 package com.huex.netflixbacked.services;
 
 import com.huex.netflixbacked.dto.request.MovieDetailsRequest;
+import com.huex.netflixbacked.exceptions.InternalServerException;
+import com.huex.netflixbacked.exceptions.InvalidReqestDataException;
 import com.huex.netflixbacked.models.Genres;
 import com.huex.netflixbacked.models.MovieDetails;
 import com.huex.netflixbacked.models.Person;
@@ -9,6 +11,8 @@ import com.huex.netflixbacked.dao.MovieDetailsRepository;
 import com.huex.netflixbacked.dao.PersonRepository;
 import com.huex.netflixbacked.utilities.CsvFileProcessor;
 import com.huex.netflixbacked.utilities.CsvFileWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,12 +47,25 @@ public class MovieDetailsServiceImpl implements MovieDetailsService {
     List<MovieDetails> moviesDbQueue = new ArrayList<>();
     List<MovieDetailsRequest> moviesCsvQueue = new ArrayList<>();
 
-    public List<MovieDetails> getFirstNTitles(String type, int n){
+
+    private static final Logger logger = LoggerFactory.getLogger(MovieDetailsServiceImpl.class);
+
+    public List<MovieDetails> getFirstNTitles(String type, String count){
+        int n;
+        try{
+            n = Integer.parseInt(count);
+        }
+        catch (NumberFormatException exception){
+            logger.error("Invalid value provided for count", exception);
+            throw new InvalidReqestDataException("Invalid value provided for count");
+        }
         List<MovieDetails> dbMovieList = (List<MovieDetails>) movieDetailsRepository.findAllFirstN(correctTitleType(type),n);
         dbMovieList.addAll(moviesDbQueue.stream()
                 .filter(movieDetails -> movieDetails.getType().equals(correctTitleType(type)))
                 .collect(Collectors.toList()));
         dbMovieList.sort(new MovieDetailsComparator());
+
+        logger.info("getFirstNTitles result list size for params " + type + ", " + count + ": " + dbMovieList.size());
         if(dbMovieList.size()<=n) return dbMovieList;
         return dbMovieList.subList(0,n);
     }
@@ -61,6 +78,7 @@ public class MovieDetailsServiceImpl implements MovieDetailsService {
                 .collect(Collectors.toList()));
 
         dbMovieList.sort(new MovieDetailsComparator());
+        logger.info("getTitlesByGenreType result list size for params " + type + ", " + genreType + ": " + dbMovieList.size());
         return  dbMovieList;
     }
 
@@ -72,6 +90,7 @@ public class MovieDetailsServiceImpl implements MovieDetailsService {
                 .collect(Collectors.toList()));
 
         dbMovieList.sort(new MovieDetailsComparator());
+        logger.info("getTitlesByCountry result list size for params " + type + ", " + country + ": " + dbMovieList.size());
         return  dbMovieList;
     }
 
@@ -81,7 +100,8 @@ public class MovieDetailsServiceImpl implements MovieDetailsService {
             castedStartDate= new SimpleDateFormat("dd-MM-yyyy").parse(startDate);
             castedEndDate = new SimpleDateFormat("dd-MM-yyyy").parse(endDate);
         } catch (ParseException e) {
-            e.printStackTrace();
+            logger.error("Invalid input values provided for startDate/ endDate", e);
+            throw new InvalidReqestDataException("Invalid input values provided for startDate/ endDate");
         }
 
         List<MovieDetails> dbMovieList = (List<MovieDetails>) movieDetailsRepository.findTitleBetweenDates(correctTitleType(type), startDate, endDate);
@@ -96,6 +116,7 @@ public class MovieDetailsServiceImpl implements MovieDetailsService {
                 .collect(Collectors.toList()));
 
         dbMovieList.sort(new MovieDetailsComparator());
+        logger.info("getTitlesBetweenDates result list size for params " + type + ", " + startDate + ", " + endDate + ": " + dbMovieList.size());
         return  dbMovieList;
     }
 
@@ -105,23 +126,25 @@ public class MovieDetailsServiceImpl implements MovieDetailsService {
         return title;
     }
 
-    public boolean addMovieDetails(String dataSource, MovieDetailsRequest movieDetailsRequest){
+    public void addMovieDetails(String dataSource, MovieDetailsRequest movieDetailsRequest){
         if(dataSource.equals("csv")){
             moviesDbQueue.add(movieDetailsRequest.build());
             try {
                 CsvFileWriter.writeMovieDetailsToCsvFile(movieDetailsRequest);
-                return true;
             } catch (IOException e) {
-                e.printStackTrace();
-                return false;
+                logger.error("Error while inserting into CSV File", e);
+                throw new InternalServerException("Error while processing the request. Please check logs for error details");
             }
         }
-        if(dataSource.equals("db")){
+        else if(dataSource.equals("db")){
             moviesCsvQueue.add(movieDetailsRequest);
             movieDetailsRepository.save(movieDetailsRequest.build());
-            return true;
         }
-        return false;
+
+        else{
+            throw new InvalidReqestDataException("Invalid input values provided for dbSource");
+        }
+        logger.info("Data has been imported to " + dataSource);
     }
 
     public void pushDbQueueToDb(){
@@ -134,7 +157,8 @@ public class MovieDetailsServiceImpl implements MovieDetailsService {
             try {
                 CsvFileWriter.writeMovieDetailsToCsvFile(csvRecord);
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage(), e);
+                throw new InternalServerException("Error while processing the request. Please check logs for error details");
             }
         }
 
@@ -152,7 +176,8 @@ public class MovieDetailsServiceImpl implements MovieDetailsService {
             insertMoviesListIntoDB(movieDetailsList);
 
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
+            throw new InternalServerException("Error while processing the request. Please check logs for error details");
         }
     }
 
@@ -160,7 +185,6 @@ public class MovieDetailsServiceImpl implements MovieDetailsService {
         int personMapHits = 0;
         int genresMapHits = 0;
         LocalDateTime t1 = LocalDateTime.now();
-        System.out.println("reached insertMoviesListIntoDB");
         for(int i=0;i<movieDetailsList.size();i++){
         //for(int i=0;i<10;i++){
             List<Person> cast = movieDetailsList.get(i).getCast();
@@ -170,8 +194,6 @@ public class MovieDetailsServiceImpl implements MovieDetailsService {
             for(int j=0;j<cast.size();j++){
                 Person fromRepo = null;
                 String queryFor = cast.get(j).getName();
-
-                System.out.println("Searching for "+queryFor);
 
                 if(personMap.get(""+queryFor)!=null) {
                     fromRepo = personMap.get(queryFor);
@@ -191,8 +213,6 @@ public class MovieDetailsServiceImpl implements MovieDetailsService {
             listElem.setCast(updatedCast);
             movieDetailsList.set(i, listElem);
         }
-        System.out.println("Safe until here 123");
-
 
         for(int i=0;i<movieDetailsList.size();i++){
         //for(int i=0;i<10;i++){
@@ -224,10 +244,9 @@ public class MovieDetailsServiceImpl implements MovieDetailsService {
             movieDetailsList.set(i, listElem);
         }
 
-        System.out.println("Safe until here 456");
         movieDetailsRepository.saveAll(movieDetailsList);
         LocalDateTime t2 = LocalDateTime.now();
-        System.out.println("Execution Time: " + ChronoUnit.SECONDS.between(t1, t2) + " seconds" + personMapHits + " "+ genresMapHits);
+        logger.info("Execution Time: " + ChronoUnit.SECONDS.between(t1, t2));
     }
 
     public HashMap<String, Person> getPersonMap() {

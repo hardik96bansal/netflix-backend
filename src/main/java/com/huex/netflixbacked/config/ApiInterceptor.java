@@ -1,5 +1,6 @@
 package com.huex.netflixbacked.config;
 
+import com.huex.netflixbacked.exceptions.UnautorizedAccessException;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,7 +16,7 @@ public class ApiInterceptor extends HandlerInterceptorAdapter {
         String value = request.getHeader("X-Auth-Token");
 
         if(value == null){
-            throw new Exception("Token Not Found");
+            throw new UnautorizedAccessException("Unauthorized Access Attempt: Token Not Found. Please sign in again and continue");
         }
 
         String currentRequestId = UUID.randomUUID().toString();

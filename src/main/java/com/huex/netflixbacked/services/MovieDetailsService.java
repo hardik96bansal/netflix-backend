@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface MovieDetailsService {
 
-    public List<MovieDetails> getFirstNTitles(String type, int n);
+    public List<MovieDetails> getFirstNTitles(String type, String n);
 
     public List<MovieDetails> getTitlesByGenreType(String type, String genreType);
 
@@ -15,5 +15,5 @@ public interface MovieDetailsService {
 
     public List<MovieDetails> getTitlesBetweenDates(String type, String startDate, String endDate);
 
-    public boolean addMovieDetails(String dataSource, MovieDetailsRequest movieDetailsRequest);
+    public void addMovieDetails(String dataSource, MovieDetailsRequest movieDetailsRequest);
 }
