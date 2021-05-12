@@ -9,7 +9,8 @@ import java.io.IOException;
 public class CsvFileWriter {
 
     public static void writeMovieDetailsToCsvFile(MovieDetailsRequest movieDetailsRequest) throws IOException {
-        String filePath = new File("").getAbsolutePath()+"\\src\\main\\resources\\static\\"+"netflix_titles.csv";
+        //String filePath = new File("").getAbsolutePath()+"\\src\\main\\resources\\static\\"+"netflix_titles.csv";
+        String filePath = "netflix_titles.csv";
         FileWriter csvFileWriter = new FileWriter(filePath, true);
         csvFileWriter.append(movieDetailsRequest.toCsvFormat());
         csvFileWriter.flush();

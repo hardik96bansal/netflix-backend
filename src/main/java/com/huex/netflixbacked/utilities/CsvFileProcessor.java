@@ -27,7 +27,8 @@ public class CsvFileProcessor {
         //show_id	type	title	director	cast	country	date_added	release_year	rating	duration	listed_in	description
         List<MovieDetails> movieDetailsList = new ArrayList<>();
         String row;
-        String filePath = new File("").getAbsolutePath()+"\\src\\main\\resources\\static\\"+fileName;
+        //String filePath = new File("").getAbsolutePath()+"\\src\\main\\resources\\static\\"+fileName;
+        String filePath = fileName;
         System.out.println(filePath);
 
 
