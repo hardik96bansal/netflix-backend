@@ -17,7 +17,7 @@ public class DataSourceSync {
 
     private static final Logger logger = LoggerFactory.getLogger(DataSourceSync.class);
 
-    @Scheduled(fixedDelay = 30000)
+    @Scheduled(fixedDelay = 60000)
     public void syncDataSources() {
         logger.info("DataSourceSync called at: " + LocalDateTime.now() + " DBQueue Size: " + movieDetailsServiceImpl.getMoviesDbQueue().size()
             + " CSVQueue Size: " + movieDetailsServiceImpl.getMoviesCsvQueue().size());
